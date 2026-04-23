@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Table Render</title>
+    <title>Interactive Table</title>
     <style>
         table {
             border-collapse: collapse;
@@ -12,56 +12,75 @@
             padding: 8px;
             text-align: center;
         }
+        tr:hover {
+            background-color: #ddd;
+            cursor: pointer;
+        }
+        button {
+            padding: 5px 10px;
+        }
     </style>
 </head>
 <body>
 
-<h2>Data Table</h2>
+<h2>Table Interaktif</h2>
 <div id="app"></div>
 
 <script>
-    //DATA (modular & scalable)
+    // ✅ DATA
     const data = [
         { id: 1, nama: "satu" },
         { id: 2, nama: "dua" },
         { id: 3, nama: "tiga" }
     ];
 
-    //METHOD untuk buat header (reusable)
+    // ✅ METHOD: aksi saat klik
+    function handleClick(item) {
+        alert(`Kamu klik: ${item.nama}`);
+        console.log(item);
+    }
+
+    // ✅ render header (reusable)
     function renderHeader(keys) {
         return `
             <tr>
-                ${keys.map(key => `<th>${key.toUpperCase()}</th>`).join('')}
+                ${keys.map(k => `<th>${k.toUpperCase()}</th>`).join('')}
+                <th>AKSI</th>
             </tr>
         `;
     }
 
-    //METHOD untuk buat row (DRY)
+    // ✅ render rows (modular + DRY)
     function renderRows(data, keys) {
-        return data.map(item => `
-            <tr>
-                ${keys.map(key => `<td>${item[key]}</td>`).join('')}
+        return data.map((item, index) => `
+            <tr onclick="handleClick(${index})">
+                ${keys.map(k => `<td>${item[k]}</td>`).join('')}
+                <td>
+                    <button onclick="handleButton(event, ${index})">Klik</button>
+                </td>
             </tr>
         `).join('');
     }
 
-    //METHOD utama render table (modular & scalable)
+    // ✅ handle button (biar tidak double trigger row)
+    function handleButton(event, index) {
+        event.stopPropagation();
+        handleClick(data[index]);
+    }
+
+    // ✅ render table utama
     function renderTable(data) {
-        const keys = Object.keys(data[0]); // otomatis ambil kolom
+        const keys = Object.keys(data[0]);
 
         return `
             <table>
-                <thead>
-                    ${renderHeader(keys)}
-                </thead>
-                <tbody>
-                    ${renderRows(data, keys)}
-                </tbody>
+                <thead>${renderHeader(keys)}</thead>
+                <tbody>${renderRows(data, keys)}</tbody>
             </table>
         `;
     }
 
-    //render ke DOM
+    // render ke DOM
     document.getElementById("app").innerHTML = renderTable(data);
 </script>
 
