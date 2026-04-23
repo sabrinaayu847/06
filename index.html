@@ -1,87 +1,111 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Interactive Table</title>
+    <title>Multi Render UI</title>
     <style>
-        table {
-            border-collapse: collapse;
-            width: 50%;
+        .card {
+            border: 1px solid #333;
+            padding: 10px;
+            margin: 5px;
+            display: inline-block;
         }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-        tr:hover {
-            background-color: #ddd;
+        ul { padding: 0; }
+        li { list-style: none; margin: 5px 0; }
+        .menu a {
+            margin-right: 10px;
             cursor: pointer;
-        }
-        button {
-            padding: 5px 10px;
+            color: blue;
         }
     </style>
 </head>
 <body>
 
-<h2>Table Interaktif</h2>
+<h2>Menu</h2>
+<div id="menu"></div>
+
+<h2>Output</h2>
 <div id="app"></div>
 
 <script>
-    // ✅ DATA
-    const data = [
-        { id: 1, nama: "satu" },
-        { id: 2, nama: "dua" },
-        { id: 3, nama: "tiga" }
-    ];
+    // DATA (scalable)
+    const data = Array.from({ length: 9 }, (_, i) => ({
+        id: i + 1,
+        nama: ["satu","dua","tiga","empat","lima","enam","tujuh","delapan","sembilan"][i]
+    }));
 
-    // ✅ METHOD: aksi saat klik
-    function handleClick(item) {
-        alert(`Kamu klik: ${item.nama}`);
-        console.log(item);
-    }
+    // =========================
+    // RENDER METHODS
+    // =========================
 
-    // ✅ render header (reusable)
-    function renderHeader(keys) {
-        return `
-            <tr>
-                ${keys.map(k => `<th>${k.toUpperCase()}</th>`).join('')}
-                <th>AKSI</th>
-            </tr>
-        `;
-    }
-
-    // ✅ render rows (modular + DRY)
-    function renderRows(data, keys) {
-        return data.map((item, index) => `
-            <tr onclick="handleClick(${index})">
-                ${keys.map(k => `<td>${item[k]}</td>`).join('')}
-                <td>
-                    <button onclick="handleButton(event, ${index})">Klik</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    // ✅ handle button (biar tidak double trigger row)
-    function handleButton(event, index) {
-        event.stopPropagation();
-        handleClick(data[index]);
-    }
-
-    // ✅ render table utama
+    // TABLE
     function renderTable(data) {
-        const keys = Object.keys(data[0]);
-
         return `
-            <table>
-                <thead>${renderHeader(keys)}</thead>
-                <tbody>${renderRows(data, keys)}</tbody>
+            <table border="1">
+                <tr><th>ID</th><th>NAMA</th></tr>
+                ${data.map(d => `
+                    <tr>
+                        <td>${d.id}</td>
+                        <td>${d.nama}</td>
+                    </tr>
+                `).join('')}
             </table>
         `;
     }
 
-    // render ke DOM
-    document.getElementById("app").innerHTML = renderTable(data);
+    // CARD
+    function renderCard(data) {
+        return data.map(d => `
+            <div class="card">
+                <h4>${d.nama}</h4>
+                <p>ID: ${d.id}</p>
+            </div>
+        `).join('');
+    }
+
+    // LIST
+    function renderList(data) {
+        return `
+            <ul>
+                ${data.map(d => `<li>${d.id} - ${d.nama}</li>`).join('')}
+            </ul>
+        `;
+    }
+
+    // MENU (klik untuk ganti render)
+    function renderMenu() {
+        return `
+            <div class="menu">
+                <a onclick="show('table')">Table</a>
+                <a onclick="show('card')">Card</a>
+                <a onclick="show('list')">List</a>
+            </div>
+        `;
+    }
+
+    // =========================
+    // CONTROLLER (modular)
+    // =========================
+
+    function show(type) {
+        let html = '';
+
+        if (type === 'table') html = renderTable(data);
+        if (type === 'card') html = renderCard(data);
+        if (type === 'list') html = renderList(data);
+
+        document.getElementById("app").innerHTML = html;
+    }
+
+    // =========================
+    // INIT
+    // =========================
+
+    function init() {
+        document.getElementById("menu").innerHTML = renderMenu();
+        show('table'); // default
+    }
+
+    init();
 </script>
 
 </body>
