@@ -1,20 +1,84 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Multi Render UI</title>
+    <title>Render 5 Menu</title>
     <style>
-        .card {
-            border: 1px solid #333;
-            padding: 10px;
-            margin: 5px;
-            display: inline-block;
+        body {
+            font-family: Arial;
+            background: #f5f7fa;
+            padding: 20px;
         }
-        ul { padding: 0; }
-        li { list-style: none; margin: 5px 0; }
-        .menu a {
+
+        .menu {
+            margin-bottom: 20px;
+        }
+
+        .menu button {
+            padding: 10px 15px;
             margin-right: 10px;
+            border: none;
+            background: #4a90e2;
+            color: white;
+            border-radius: 6px;
             cursor: pointer;
-            color: blue;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #4a90e2;
+            color: white;
+            padding: 10px;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        /* card */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .card {
+            background: #4a90e2;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        /* list */
+        li {
+            list-style: none;
+            background: #eef3f8;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* menu angka */
+        .menu-angka {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .menu-angka div {
+            background: #4a90e2;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -23,11 +87,10 @@
 <h2>Menu</h2>
 <div id="menu"></div>
 
-<h2>Output</h2>
 <div id="app"></div>
 
 <script>
-    // DATA (scalable)
+    // DATA
     const data = Array.from({ length: 9 }, (_, i) => ({
         id: i + 1,
         nama: ["satu","dua","tiga","empat","lima","enam","tujuh","delapan","sembilan"][i]
@@ -37,11 +100,24 @@
     // RENDER METHODS
     // =========================
 
-    // TABLE
+    function renderMenuAngka(data) {
+        return `
+        <div class="box">
+            <div class="menu-angka">
+                ${data.map(d => `<div>${d.id}</div>`).join('')}
+            </div>
+        </div>`;
+    }
+
+    function renderArray(data) {
+        return `<div class="box"><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+    }
+
     function renderTable(data) {
         return `
-            <table border="1">
-                <tr><th>ID</th><th>NAMA</th></tr>
+        <div class="box">
+            <table>
+                <tr><th>ID</th><th>Nama</th></tr>
                 ${data.map(d => `
                     <tr>
                         <td>${d.id}</td>
@@ -49,46 +125,41 @@
                     </tr>
                 `).join('')}
             </table>
-        `;
+        </div>`;
     }
 
-    // CARD
     function renderCard(data) {
-        return data.map(d => `
-            <div class="card">
-                <h4>${d.nama}</h4>
-                <p>ID: ${d.id}</p>
+        return `
+        <div class="box">
+            <div class="card-container">
+                ${data.map(d => `
+                    <div class="card">
+                        <h4>${d.nama}</h4>
+                        <p>${d.id}</p>
+                    </div>
+                `).join('')}
             </div>
-        `).join('');
+        </div>`;
     }
 
-    // LIST
     function renderList(data) {
         return `
+        <div class="box">
             <ul>
                 ${data.map(d => `<li>${d.id} - ${d.nama}</li>`).join('')}
             </ul>
-        `;
-    }
-
-    // MENU (klik untuk ganti render)
-    function renderMenu() {
-        return `
-            <div class="menu">
-                <a onclick="show('table')">Table</a>
-                <a onclick="show('card')">Card</a>
-                <a onclick="show('list')">List</a>
-            </div>
-        `;
+        </div>`;
     }
 
     // =========================
-    // CONTROLLER (modular)
+    // CONTROLLER
     // =========================
 
     function show(type) {
         let html = '';
 
+        if (type === 'menu') html = renderMenuAngka(data);
+        if (type === 'array') html = renderArray(data);
         if (type === 'table') html = renderTable(data);
         if (type === 'card') html = renderCard(data);
         if (type === 'list') html = renderList(data);
@@ -97,15 +168,24 @@
     }
 
     // =========================
-    // INIT
+    // BUTTON MENU
     // =========================
 
-    function init() {
-        document.getElementById("menu").innerHTML = renderMenu();
-        show('table'); // default
+    function renderMenu() {
+        return `
+            <div class="menu">
+                <button onclick="show('menu')">Menu</button>
+                <button onclick="show('array')">Array</button>
+                <button onclick="show('table')">Table</button>
+                <button onclick="show('card')">Card</button>
+                <button onclick="show('list')">List</button>
+            </div>
+        `;
     }
 
-    init();
+    // INIT
+    document.getElementById("menu").innerHTML = renderMenu();
+    show('menu');
 </script>
 
 </body>
