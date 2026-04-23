@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>Table Render</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Data Table</h2>
+<div id="app"></div>
+
+<script>
+    //DATA (modular & scalable)
+    const data = [
+        { id: 1, nama: "satu" },
+        { id: 2, nama: "dua" },
+        { id: 3, nama: "tiga" }
+    ];
+
+    //METHOD untuk buat header (reusable)
+    function renderHeader(keys) {
+        return `
+            <tr>
+                ${keys.map(key => `<th>${key.toUpperCase()}</th>`).join('')}
+            </tr>
+        `;
+    }
+
+    //METHOD untuk buat row (DRY)
+    function renderRows(data, keys) {
+        return data.map(item => `
+            <tr>
+                ${keys.map(key => `<td>${item[key]}</td>`).join('')}
+            </tr>
+        `).join('');
+    }
+
+    //METHOD utama render table (modular & scalable)
+    function renderTable(data) {
+        const keys = Object.keys(data[0]); // otomatis ambil kolom
+
+        return `
+            <table>
+                <thead>
+                    ${renderHeader(keys)}
+                </thead>
+                <tbody>
+                    ${renderRows(data, keys)}
+                </tbody>
+            </table>
+        `;
+    }
+
+    //render ke DOM
+    document.getElementById("app").innerHTML = renderTable(data);
+</script>
+
+</body>
+</html>
